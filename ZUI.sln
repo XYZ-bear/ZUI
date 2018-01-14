@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZUI", "ZUI\ZUI.vcxproj", "{3727191D-FBE9-4B4B-A70B-4F1D3179D0BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3727191D-FBE9-4B4B-A70B-4F1D3179D0BC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3727191D-FBE9-4B4B-A70B-4F1D3179D0BC}.Debug|Win32.Build.0 = Debug|Win32
+		{3727191D-FBE9-4B4B-A70B-4F1D3179D0BC}.Release|Win32.ActiveCfg = Release|Win32
+		{3727191D-FBE9-4B4B-A70B-4F1D3179D0BC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

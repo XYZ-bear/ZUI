@@ -17,10 +17,17 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+private:
+
+private:
+	void DrawWindow(int RgnWidth,int RgnHeight);
+	void DrawTitleBar(int RgnWidth,int RgnHeight);
+
 
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnPaint();
-	void DrawTitleBar(int RgnWidth,int RgnHeight);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	virtual BOOL OnInitDialog();
 };

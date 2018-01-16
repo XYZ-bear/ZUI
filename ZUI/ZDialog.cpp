@@ -42,6 +42,9 @@ BEGIN_MESSAGE_MAP(CZDialog, CDialog)
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_WM_NCCALCSIZE()
+	ON_WM_MOUSEMOVE()
+	ON_WM_NCMOUSEMOVE()
+	ON_WM_NCLBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -164,13 +167,39 @@ void CZDialog::DrawWindow() {
 }
 
 void CZDialog::DrawTitleBar(Graphics &g){
-
+	// 画分割线
 	g.DrawLine(&Pen(m_borderColor, 1), Point(m_titleRect.left, m_titleRect.bottom), Point(m_titleRect.right, m_titleRect.bottom));
+
+	// 计算居中位置
 	int bt_wh = 16;
 	int bt_top = m_titleRect.top+(m_titleRect.Height() - bt_wh) / 2;
-	g.FillEllipse(&SolidBrush(m_borderColor), m_titleRect.right- bt_wh*4-10, bt_top, bt_wh, bt_wh);
-	g.FillEllipse(&SolidBrush(m_borderColor), m_titleRect.right - bt_wh * 3, bt_top, bt_wh, bt_wh);
-	g.FillEllipse(&SolidBrush(m_borderColor), m_titleRect.right - bt_wh * 2+10, bt_top, bt_wh, bt_wh);
+
+	// 关闭按钮区域
+	g.FillEllipse(&SolidBrush(Color(255,30,101,158)), m_titleRect.right- bt_wh*4-10, bt_top, bt_wh, bt_wh);
+	m_min_regin=CreateEllipticRgn(m_titleRect.right- bt_wh*4-10, bt_top,m_titleRect.right- bt_wh*4-10+bt_wh,bt_top+bt_wh);
+
+	// 最大化按钮区域
+	g.FillEllipse(&SolidBrush(Color(255,85,125,39)), m_titleRect.right - bt_wh * 3, bt_top, bt_wh, bt_wh);
+	m_max_regin=CreateEllipticRgn(m_titleRect.right - bt_wh * 3, bt_top,m_titleRect.right - bt_wh * 3+bt_wh,bt_top+bt_wh);
+
+	// 最小化按钮区域
+	g.FillEllipse(&SolidBrush(Color(255,199,53,36)), m_titleRect.right - bt_wh * 2+10, bt_top, bt_wh, bt_wh);
+	m_close_regin=CreateEllipticRgn(m_titleRect.right - bt_wh * 2+10, bt_top,m_titleRect.right - bt_wh * 2+10+bt_wh,bt_top+bt_wh);
+	
+	CString title;
+	GetWindowText(title);
+	FontFamily fontFamily(L"微软雅黑"); 
+    Gdiplus::Font font(&fontFamily ,12, FontStyleRegular, UnitPixel);
+	SolidBrush brush(Color(255, 200, 200, 200));
+	StringFormat stringformat;
+    stringformat.SetAlignment(StringAlignmentNear);
+	stringformat.SetLineAlignment(StringAlignmentCenter);
+	g.SetTextRenderingHint(TextRenderingHintAntiAlias);
+	g.DrawString(title, -1, &font,RectF(50, 3, m_titleRect.Width(), m_titleRect.Height()), &stringformat, &brush);
+
+	HICON m_hIcon = AfxGetApp()->LoadIcon(128);
+	::DrawIconEx(g.GetHDC(), m_titleRect.left+5, m_titleRect.top+8, m_hIcon, 24, 24, 0, NULL, DI_NORMAL);
+
 }
 
 
@@ -202,4 +231,48 @@ void CZDialog::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 	m_titleRect.right = lpncsp->rgrc[0].right - lpncsp->rgrc[0].left - GetSystemMetrics(SM_CXFRAME) - m_borderOffset;
 	m_titleRect.bottom = m_titleRect.top + GetSystemMetrics(SM_CYSIZE) + m_borderOffset + m_titleHight - 17;
 	CDialog::OnNcCalcSize(bCalcValidRects, lpncsp);
+}
+
+void CZDialog::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialog::OnMouseMove(nFlags, point);
+}
+
+
+void CZDialog::OnNcMouseMove(UINT nHitTest, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	ScreenToTitle(point);
+	if(PtInRegion(m_close_regin,point.x,point.y))
+		OutputDebugString(_T("sdfsdf"));
+	CDialog::OnNcMouseMove(nHitTest, point);
+}
+
+
+void CZDialog::OnNcLButtonDown(UINT nHitTest, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	ScreenToTitle(point);
+	if(PtInRegion(m_min_regin,point.x,point.y))
+		SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, MAKELPARAM(point.x, point.y));
+	else if(PtInRegion(m_max_regin,point.x,point.y)){
+		if (IsZoomed())
+			SendMessage(WM_SYSCOMMAND, SC_RESTORE, MAKELPARAM(point.x, point.y));
+		else{
+			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, MAKELPARAM(point.x, point.y));
+			Invalidate();
+		}
+	}
+	else if(PtInRegion(m_close_regin,point.x,point.y))
+		SendMessage(WM_CLOSE);
+	CDialog::OnNcMButtonDown(nHitTest, point);
+}
+
+void CZDialog::ScreenToTitle(CPoint &point){
+	CRect wrc;
+	GetWindowRect(&wrc);
+	point.x-=wrc.left;
+	point.y-=wrc.top;
 }

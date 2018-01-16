@@ -18,10 +18,13 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 private:
-
+	CRect m_titleRect;
+	int m_titleHight;
+	Color m_borderColor;
+	int m_borderOffset;
 private:
-	void DrawWindow(int RgnWidth,int RgnHeight);
-	void DrawTitleBar(int RgnWidth,int RgnHeight);
+	void DrawWindow();
+	void DrawTitleBar(Graphics &g);
 
 
 	DECLARE_MESSAGE_MAP()
